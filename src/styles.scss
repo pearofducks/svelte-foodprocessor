@@ -44,11 +44,13 @@ h5 { font-size: 1.5rem; }
 
 a {
   color: inherit;
-  text-decoration: none;
+  text-decoration: underline;
+  text-decoration-color: #eee;
+  transition: 0.2s ease;
 
   &:hover {
-    text-decoration: underline;
-    text-decoration-color: orange;
+    text-decoration-color: #ccc;
+    text-decoration-style: solid;
   }
 }
 
