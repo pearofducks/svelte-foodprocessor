@@ -15,12 +15,14 @@
   "scripts": {
     "build": "rollup -c",
     "autobuild": "rollup -c -w",
-    "dev": "run-p start:dev autobuild",
+    "dev": "run-p start:dev autobuild sass",
     "start": "sirv public",
-    "start:dev": "sirv public --dev --single"
+    "start:dev": "sirv public --dev --single",
+    "sass": "sass --watch src/styles.scss public/styles.css"
   },
   "dependencies": {
     "marked": "^0.6.2",
-    "page": "^1.11.4"
+    "page": "^1.11.4",
+    "sass": "^1.21.0"
   }
 }

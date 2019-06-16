@@ -1,7 +1,7 @@
 <script>
 import IngredientSection from './IngredientSection.svelte'
 import Ingredient from './Ingredient.svelte'
-
+import How from './How.svelte'
 
 export let recipe
 
@@ -19,7 +19,4 @@ $: how = recipe.how
 	  {/if}
 	{/each}
 </section>
-<section class="howBlock" aria-labelledby="howLabel">
-	<h3 id="howLabel">how</h3>
-	<span class="howTextBlock" v-html="how"/>
-</section>
+<How {how} />

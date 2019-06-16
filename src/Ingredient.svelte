@@ -62,12 +62,12 @@ function prettyify_amount(amount) {
 	<div class="left">{ amount }</div>
 	<div class="right" on:click={ toggleCompleted }>
 		{#if !amountData}
-		<span>{@html markupTitle()}</span>
+			<span>{@html markupTitle()}</span>
 		{:else}
-		<strong>{ title[0] }</strong>
-		{#if title.length == 2}
-		<em>{ title[1] }</em>
-		{/if}
+			<strong>{ title[0] }</strong>
+			{#if title.length == 2}
+				<em>{ title[1] }</em>
+			{/if}
 		{/if}
 	</div>
 </div>
