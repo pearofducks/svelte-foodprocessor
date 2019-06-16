@@ -1,4 +1,6 @@
 <script>
+import marked from 'marked'
+
 export let amountData
 export let titleData
 let completed = false
@@ -18,7 +20,7 @@ function getAmount () {
 }
 
 $: title = titleData.split(' - ')
-$: amount = getAmount()
+$: amount = getAmount() || ''
 function markupTitle() {
 	return marked(titleData)
 }
