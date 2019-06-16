@@ -2,3 +2,4 @@
 node_modules
 public/bundle.*
 public/styles.*
+public/recipes.js

@@ -13,7 +13,9 @@
     "svelte": "^3.0.0"
   },
   "scripts": {
-    "build": "rollup -c",
+    "build:css": "sass --no-source-map --style=compressed src/styles.scss public/styles.css",
+    "build:js": "rollup -c",
+    "build": "run-p build:*",
     "autobuild": "rollup -c -w",
     "dev": "run-p start:dev autobuild sass",
     "start": "sirv public",
