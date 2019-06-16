@@ -110,9 +110,9 @@ ul.recipe-list {
 .ingredientSectionBlock { margin: 1.5rem 0; }
 
 @media only screen and (max-device-width: 480px) {
-  html { font-size: 40%; }
+  html { font-size: 46%; }
   body { width: 100%; }
-  .container { width: 90%; }
+  .container { width: 100%; padding: 1.5rem; padding-top: 0; }
   .howBlock { font-size: 1.7rem; }
   .howTextBlock ul, .howTextBlock ol { margin-left: 5rem; }
 }
