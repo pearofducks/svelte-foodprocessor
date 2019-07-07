@@ -7,20 +7,6 @@ export let titleData
 let completed = false
 let amount
 
-function getAmount () {
-	const amountArray = /(\d*\.?\d+)\s(.+)/.exec(amountData)
-	if (!amountArray) return amountData
-
-	const toExpand = amountArray[2]
-	const expanded_measure = expand(toExpand)
-	const didExpand = expanded_measure !== toExpand
-	const amount_raw = parseFloat(amountArray[1]) * $multiplier
-	const amount_display = prettyify_amount(amount_raw)
-	const greaterThanOne = amount_raw > 1
-	const addSuffix = greaterThanOne && didExpand
-	return `${amount_display} ${expanded_measure}${addSuffix ? 's' : ''}`
-}
-
 $: title = titleData.split(' - ')
 $: {
 	const amountArray = /(\d*\.?\d+)\s(.+)/.exec(amountData)
