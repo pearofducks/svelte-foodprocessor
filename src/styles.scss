@@ -75,6 +75,25 @@ ul.recipe-list {
   li { height: 4rem; }
 }
 
+.portion {
+  appearance: none;
+  border: 1px solid #aaa;
+  outline: none;
+  background: transparent;
+  font-weight: 700;
+  color: inherit;
+  text-transform: uppercase;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  opacity: 0.5;
+
+  &:hover {
+    background-color: #eee;
+  }
+
+  &.activePortion { opacity: 1; }
+}
+
 .whatBlock, .howBlock {
   margin: 2.5rem 0;
 }

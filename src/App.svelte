@@ -13,7 +13,9 @@ page('/:slug', ({ params }, next) => (slug = params.slug, next()), scrollToTop)
 page()
 
 $: recipe = recipes[slug] || {}
-$: document.title = 'h|f - ' + (recipe.name || 'recipes')
+$: {
+	document.title = 'h|f - ' + (recipe.name || 'recipes')
+}
 </script>
 
 <main class="container">
