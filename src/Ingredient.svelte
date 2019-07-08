@@ -7,23 +7,27 @@ export let titleData
 let completed = false
 let amount
 
-$: title = titleData.split(' - ')
-$: {
+function getAmount(multiplier) {
 	const amountArray = /(\d*\.?\d+)\s(.+)/.exec(amountData)
 	if (!amountArray) {
-		if (parseFloat(amountData) === amountData) amount = parseFloat(amountData) * $multiplier
-		else amount = amountData
+		const amountDataNumber = parseFloat(amountData)
+		if (amountDataNumber === amountData) return amountDataNumber * $multiplier
+		else return amountData
 	} else {
 		const toExpand = amountArray[2]
 		const expanded_measure = expand(toExpand)
 		const didExpand = expanded_measure !== toExpand
-		const amount_raw = parseFloat(amountArray[1]) * $multiplier
+		const amount_raw = parseFloat(amountArray[1]) * multiplier
 		const amount_display = toExpand === 'g' ? amount_raw : prettyify_amount(amount_raw)
 		const greaterThanOne = amount_raw > 1
 		const addSuffix = greaterThanOne && didExpand
-		amount = `${amount_display} ${expanded_measure}${addSuffix ? 's' : ''}`
+		return `${amount_display} ${expanded_measure}${addSuffix ? 's' : ''}`
 	}
 }
+
+$: title = titleData.split(' - ')
+$: amount = getAmount($multiplier)
+
 function markupTitle() {
 	return marked(titleData)
 }
