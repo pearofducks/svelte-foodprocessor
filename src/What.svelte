@@ -11,7 +11,7 @@ export let what
     {#if Object(v) === v}
       <IngredientSection header={k} content={v} />
     {:else}
-      <Ingredient amountData={v} titleData={k} />
+      <Ingredient _amount={v} _description={k} />
     {/if}
   {/each}
 </section>

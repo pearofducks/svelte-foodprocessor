@@ -8,6 +8,6 @@ export let content
 <div class="ingredientSectionBlock">
   <h4>{header}</h4>
   {#each Object.entries(content) as [k, v]}
-	  <Ingredient amountData={v} titleData={k} />
+    <Ingredient _amount={v} _description={k} />
   {/each}
 </div>

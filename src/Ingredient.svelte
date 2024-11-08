@@ -1,8 +1,8 @@
 <script>
 import { Amount, Description } from './ingredient-parser.js'
 
-export let ingredient
-const [_description, _amount] = Object.entries(ingredient).at(0)
+export let _amount
+export let _description
 
 const amount = new Amount(_amount)
 const description = new Description(_amount, _description)

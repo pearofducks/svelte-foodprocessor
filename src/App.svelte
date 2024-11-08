@@ -1,6 +1,5 @@
 <script>
 import page from 'page'
-import { recipes } from './store'
 import Home from './Home.svelte'
 import Recipe from './Recipe.svelte'
 

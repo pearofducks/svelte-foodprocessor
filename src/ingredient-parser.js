@@ -19,7 +19,7 @@ export class Description {
   }
   get html() {
     if (!this.rawAmount) return `<span>${this.richDescription}</span>`
-    return `<strong>${this.description}</strong>`
+    return `<strong>${this.description}</strong> `
       + (this.preparation ? `<em>${this.preparation}</em>` : '')
   }
 }
@@ -53,7 +53,7 @@ export class Amount {
       const measure = amountArray[2]
       this.amount.numeric = parseFloat(amountArray[1])
       this.amount.canPretty = measure !== 'g'
-      this.amount.numericDisplay = this.amount.canPretty ? this.prettyify_amount(this.amount.numeric) : this.amount.numeric
+      this.amount.numericDisplay = this.amount.canPretty ? this.prettyifyAmount(this.amount.numeric) : this.amount.numeric
       this.amount.content = this.expandMeasure(measure)
       this.amount.canSuffix = this.amount.content !== measure
       // const greaterThanOne = amountRaw > 1
@@ -87,7 +87,7 @@ export class Amount {
       default: return decimals
     }
   }
-  prettyify_amount(amount) {
+  prettyifyAmount(amount) {
     if (Number.isInteger(amount)) return amount
     let whole_num = Math.floor(amount)
     const remain = amount - whole_num
