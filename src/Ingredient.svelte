@@ -9,8 +9,8 @@ const description = new Description(_amount, _description)
 </script>
 
 <div class="ingredient">
-  <div class="left" {...amount.data}>{amount.html}</div>
-  <button class="right">
+  <div class="left" {...amount.data}>{@html amount.html}</div>
+  <div class="right">
     {@html description.html}
-  </button>
+  </div>
 </div>

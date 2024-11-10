@@ -9,9 +9,10 @@ export let how
 </script>
 
 <Layout {name}>
-  <section>
-    <button class="portion" data-portion="half">half</button>
-    <button class="portion" data-portion="whole">whole</button>
+  <section class="portions">
+    <button class="portion" data-portion="0.5">half</button>
+    <button class="portion active" data-portion="1">whole</button>
+    <button class="portion" data-portion="2">double</button>
   </section>
   <What {what} />
   <How {how} />

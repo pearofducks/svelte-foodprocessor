@@ -14,10 +14,11 @@
     "yaml": "^2.6.0"
   },
   "scripts": {
-    "build": "vite build --ssr",
+    "build": "vite build",
     "render": "node renderer.js --path '..'"
   },
   "dependencies": {
+    "lightningcss": "^1.28.1",
     "marked": "^14.1.3",
     "page": "^1.11.4"
   }

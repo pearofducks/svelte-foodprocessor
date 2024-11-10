@@ -3,11 +3,14 @@ import { svelte } from '@sveltejs/vite-plugin-svelte'
 
 export default defineConfig({
   plugins: [svelte()],
+  css: {
+    transformer: 'lightningcss',
+  },
   build: {
     minify: false,
     target: 'esnext',
     rollupOptions: {
-      input: './src/components.js',
+      input: './src/styles.css',
       output: {
         dir: './dist',
         assetFileNames: 'assets/[name].[ext]',

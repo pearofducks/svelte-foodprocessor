@@ -36,8 +36,8 @@ export class Amount {
   }
   get data() {
     return {
+      'data-raw': this.rawAmount,
       'data-numeric': this.amount.numeric,
-      'data-numeric-display': this.amount.numericDisplay,
       'data-content': this.amount.content,
       'data-can-suffix': this.amount.canSuffix,
       'data-can-pretty': this.amount.canPretty,
@@ -47,8 +47,11 @@ export class Amount {
     const amountArray = /(\d*\.?\d+)\s(.+)/.exec(this.rawAmount)
     if (!amountArray) {
       const numericAmount = parseFloat(this.rawAmount)
-      if (numericAmount === this.rawAmount) this.amount.numeric = numericAmount
-      else this.amount.content = this.rawAmount
+      if (numericAmount == this.rawAmount) {
+        this.amount.numeric = numericAmount
+      } else {
+        this.amount.content = this.rawAmount
+      }
     } else {
       const measure = amountArray[2]
       this.amount.numeric = parseFloat(amountArray[1])
