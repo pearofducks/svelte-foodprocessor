@@ -14,7 +14,8 @@
     "yaml": "^2.6.0"
   },
   "scripts": {
-    "render": "node renderer.js --path '..'"
+    "render": "node renderer.js --path '..'",
+    "test": "node --test test/*.test.js"
   },
   "dependencies": {
     "lightningcss": "^1.28.1",

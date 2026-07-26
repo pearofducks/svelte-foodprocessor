@@ -14,8 +14,8 @@ and writes static files to `./out`:
 - `out/styles.css` — compiled from `src/styles.css` (lightningcss)
 - `out/bundle.js` — the progressive-enhancement client (see below)
 
-There is **no `vite build` step**; `vite.config.js` only configures the SSR
-transform used by the renderer.
+`vite.config.js` only configures the SSR transform used by the renderer; the client
+bundle is produced by a one-shot `vite build()` call inside `renderer.js`.
 
 ## Recipe format
 
@@ -31,27 +31,32 @@ how:                       # array of markdown strings
   - "Mix, pour into a greased loaf pan, bake 55–65 min."
 ```
 
-Amounts are parsed by `src/ingredient-parser.js` and emitted with `data-*`
-attributes so the client can rescale them.
+Amounts are parsed and formatted by `src/scale.js` (units, fractions, portion
+scaling, unit normalization) and emitted on each ingredient as `data-*` attributes
+so the client can recompute them. `src/density-table.js` maps ingredient names to
+densities for the volume→weight toggle. Both are pure/isomorphic — used at render
+time and bundled into the client — and covered by `test/`.
 
 ## Client interactivity
 
-`src/client.js` is copied verbatim to `out/bundle.js` (it has no imports, so no
-bundler is needed) and loaded via a classic `<script defer>`. It progressively
-enhances the already-rendered DOM with:
+`src/client.js` (bundled with its `scale.js` / `density-table.js` imports into
+`out/bundle.js`) loads via a classic `<script defer>` and progressively enhances
+the already-rendered DOM — no hydration. Interactions:
 
-- **portion scaling** — half / whole / double, recomputed from the base
-  `data-numeric` values
+- **portion scaling** — half / whole / double, recomputed from each amount's
+  immutable base value, with unit normalization (e.g. ½ tablespoon → 1½ teaspoons)
+- **volume → weight** — toggle known volume amounts to grams via the density table
+  (auto-hidden when a recipe has nothing convertible)
 - **ingredient check-off** — click a row to toggle a completed state (ephemeral)
 
-The page is fully readable with JavaScript disabled.
+The page is fully readable and correct with JavaScript disabled.
 
 ## Usage
 
 ```bash
 pnpm install
 pnpm run render        # renders ../recipes/**/*.recipe -> ./out
+pnpm test              # unit tests for the pure scale / density modules
 ```
 
 Then serve `./out` as static files.
-```
