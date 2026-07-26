@@ -73,7 +73,7 @@ ul.recipe-list {
   li { height: 4rem; }
 }
 
-.portion {
+.portion, .unit {
   appearance: none;
   border: 1px solid transparent;
   outline: none;
@@ -93,6 +93,11 @@ ul.recipe-list {
     opacity: 1;
     border-color: #bbb;
   }
+}
+
+.units {
+  margin-top: 0.5rem;
+  font-size: 1.3rem;
 }
 
 .whatBlock, .howBlock {

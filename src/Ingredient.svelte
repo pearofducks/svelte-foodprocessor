@@ -9,7 +9,7 @@ const description = new Description(_amount, _description)
 </script>
 
 <div class="ingredient">
-  <div class="left" {...amount.data}>{@html amount.html}</div>
+  <div class="left" {...amount.data} data-key={description.key}>{@html amount.html}</div>
   <div class="right">
     {@html description.html}
   </div>

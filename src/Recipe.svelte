@@ -23,6 +23,10 @@ export let how
     <button class="portion active" data-portion="1">whole</button>
     <button class="portion" data-portion="2">double</button>
   </section>
+  <section class="units">
+    <button class="unit active" data-mode="volume">volume</button>
+    <button class="unit" data-mode="weight">weight</button>
+  </section>
   <What {what} />
   <How {how} />
 </Layout>

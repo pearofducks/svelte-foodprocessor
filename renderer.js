@@ -4,7 +4,7 @@ import { globSync } from 'glob'
 import arg from 'arg'
 import path from 'node:path'
 import { render } from 'svelte/server'
-import { createServer, createViteRuntime } from 'vite'
+import { createServer, createViteRuntime, build } from 'vite'
 import { slugify } from './src/util.js'
 
 mkdirSync('./out', { recursive: true })
@@ -47,9 +47,26 @@ function handleRecipe(filename) {
 
 try {
   handleRecipes()
-  // Ship the progressive-enhancement client. No bundler: it has no imports, and
-  // the page loads it via the classic <script src='bundle.js'> in the template.
-  writeFileSync('./out/bundle.js', readFileSync('./src/client.js', 'utf-8'))
+  // Bundle the progressive-enhancement client (inlines ./scale.js) into a single
+  // IIFE at out/bundle.js, loaded via the classic <script src='bundle.js'> tag.
+  await build({
+    configFile: false, // plain JS bundle; skip the svelte/lightningcss app config
+    logLevel: 'warn',
+    build: {
+      minify: true,
+      target: 'es2020',
+      emptyOutDir: false,
+      rollupOptions: {
+        input: './src/client.js',
+        output: {
+          dir: './out',
+          format: 'iife',
+          entryFileNames: 'bundle.js',
+          inlineDynamicImports: true,
+        },
+      },
+    },
+  })
 } finally {
   vite.close()
 }

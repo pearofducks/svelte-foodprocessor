@@ -1,92 +1,75 @@
 // Progressive enhancement for statically rendered recipe pages.
-// The SSR DOM is authoritative; this script only attaches behavior (no hydration,
-// no framework, no build step -- it is copied verbatim to out/bundle.js).
+// The SSR DOM is authoritative; this script only attaches behavior (no hydration).
 //   1. portion buttons scale ingredient amounts (half / whole / double)
-//   2. clicking an ingredient toggles a "completed" state (ephemeral)
+//   2. volume/weight buttons swap known amounts to grams
+//   3. clicking an ingredient toggles a "completed" state (ephemeral)
+// Bundled to out/bundle.js by renderer.js (vite build), which inlines the imports.
+import { formatAmount } from './scale.js'
+import { toGrams } from './density-table.js'
+
 ;(() => {
   const container = document.querySelector('.container')
   if (!container) return
-
-  /* ---- portion scaling -------------------------------------------------- */
-
-  // Snap a decimal to the nearest nice fraction as a unicode glyph. These are the
-  // same codepoints the SSR output resolves its &frac..; entities to, so the whole
-  // (restored) and half/double (computed) states render in an identical style.
-  const GLYPHS = [
-    [1 / 8, '\u215B'],
-    [1 / 6, '\u2159'],
-    [1 / 4, '\u00BC'],
-    [1 / 3, '\u2153'],
-    [3 / 8, '\u215C'],
-    [1 / 2, '\u00BD'],
-    [5 / 8, '\u215D'],
-    [2 / 3, '\u2154'],
-    [3 / 4, '\u00BE'],
-    [7 / 8, '\u215E'],
-  ]
-  const round2 = (n) => Math.round(n * 100) / 100
-  const toFraction = (n, eps = 0.03) => {
-    const whole = Math.floor(n)
-    const rem = n - whole
-    if (rem < eps) return String(whole)
-    const hit = GLYPHS.find(([v]) => Math.abs(rem - v) < eps)
-    return hit ? `${whole || ''}${hit[1]}` : String(round2(n))
-  }
-
-  // Curated singular -> plural for freeform count nouns (data-content is not a
-  // known measure, so pluralization isn't automatic). Only these exact words are
-  // touched, so adjectives like "medium"/"large" are never mangled.
-  const COUNT_NOUNS = {
-    clove: 'cloves', can: 'cans', stick: 'sticks', slice: 'slices',
-    lemon: 'lemons', lime: 'limes', leaf: 'leaves', package: 'packages',
-    pound: 'pounds', dash: 'dashes', pinch: 'pinches',
-  }
-  const toSingular = Object.fromEntries(
-    Object.entries(COUNT_NOUNS).map(([s, p]) => [p, s]),
-  )
 
   // Amounts we must not scale: a range / compound / ratio keeps a second number
   // (or connective) inside data-content, so scaling the lead number would lie.
   const UNSCALABLE = /\d|\bto\b|\bor\b|\bper\b|\+/
 
-  const lefts = [...container.querySelectorAll('.ingredient .left')]
-  const baseHtml = new Map(lefts.map((el) => [el, el.innerHTML])) // restored at x1
+  const modelOf = (ds) => ({
+    numeric: ds.numeric == null || ds.numeric === '' ? null : parseFloat(ds.numeric),
+    unit: ds.unit || null,
+    dim: ds.dim || null,
+    content: ds.content || '',
+    canPretty: ds.canPretty === 'true',
+    canSuffix: ds.canSuffix === 'true',
+  })
 
-  const rescale = (factor) => {
+  const lefts = [...container.querySelectorAll('.ingredient .left')]
+  const baseHtml = new Map(lefts.map((el) => [el, el.innerHTML])) // restored at x1 volume
+
+  let factor = 1
+  let weight = false
+
+  const render = () => {
     for (const el of lefts) {
       const raw = el.dataset.numeric
       if (raw == null || raw === '') continue // note rows: nothing to scale
-      if (factor === 1) { el.innerHTML = baseHtml.get(el); continue } // exact restore
-      const content = el.dataset.content || ''
-      if (UNSCALABLE.test(content)) continue // freeze ranges / compounds
-      const base = parseFloat(raw)
-      if (Number.isNaN(base)) continue
-      const n = base * factor // always from immutable base
-      const num = el.dataset.canPretty === 'true' ? toFraction(n) : String(round2(n))
-      let unit = content
-      if (el.dataset.canSuffix === 'true') {
-        if (n > 1) unit = `${content}s` // cup -> cups
-      } else if (n === 1 && toSingular[content]) {
-        unit = toSingular[content] // cloves -> clove
-      } else if (n > 1 && COUNT_NOUNS[content]) {
-        unit = COUNT_NOUNS[content] // stick -> sticks
+      if (UNSCALABLE.test(el.dataset.content || '')) continue // freeze ranges / compounds
+      if (weight && el.dataset.dim === 'volume' && el.dataset.key) {
+        const g = toGrams(parseFloat(raw) * factor, el.dataset.unit, el.dataset.key)
+        if (g != null) { el.textContent = `${g} g`; continue }
       }
-      el.textContent = `${num} ${unit}`.trim()
+      if (factor === 1) el.innerHTML = baseHtml.get(el) // exact restore
+      else el.textContent = formatAmount(modelOf(el.dataset), factor)
     }
   }
 
-  const buttons = [...container.querySelectorAll('.portion')]
-  buttons.forEach((b) => {
-    b.setAttribute('type', 'button')
-    b.setAttribute('aria-pressed', b.classList.contains('active') ? 'true' : 'false')
-  })
-  const setActive = (btn) => {
-    for (const b of buttons) {
+  /* ---- button groups (portions + units) -------------------------------- */
+
+  const initGroup = (selector) => {
+    const btns = [...container.querySelectorAll(selector)]
+    btns.forEach((b) => {
+      b.setAttribute('type', 'button')
+      b.setAttribute('aria-pressed', b.classList.contains('active') ? 'true' : 'false')
+    })
+    return btns
+  }
+  const setActive = (btns, btn) => {
+    for (const b of btns) {
       const on = b === btn
       b.classList.toggle('active', on)
       b.setAttribute('aria-pressed', on ? 'true' : 'false')
     }
   }
+
+  const portionBtns = initGroup('.portion')
+
+  // Weight toggle is only useful if something on the page can convert.
+  const unitsSection = container.querySelector('.units')
+  const hasConvertible = lefts.some((el) => el.dataset.dim === 'volume' && el.dataset.key)
+  let unitBtns = []
+  if (unitsSection && !hasConvertible) unitsSection.remove()
+  else unitBtns = initGroup('.unit')
 
   /* ---- ingredient check-off (ephemeral, whole row) ---------------------- */
 
@@ -103,10 +86,18 @@
   /* ---- one delegated listener ------------------------------------------ */
 
   container.addEventListener('click', (e) => {
-    const btn = e.target.closest('.portion')
-    if (btn) {
-      setActive(btn)
-      rescale(parseFloat(btn.dataset.portion))
+    const portion = e.target.closest('.portion')
+    if (portion) {
+      setActive(portionBtns, portion)
+      factor = parseFloat(portion.dataset.portion)
+      render()
+      return
+    }
+    const unit = e.target.closest('.unit')
+    if (unit) {
+      setActive(unitBtns, unit)
+      weight = unit.dataset.mode === 'weight'
+      render()
       return
     }
     if (e.target.closest('a')) return // links navigate, don't toggle
