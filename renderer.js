@@ -3,8 +3,7 @@ import { parse as parseYaml } from 'yaml'
 import { globSync } from 'glob'
 import arg from 'arg'
 import path from 'node:path'
-import { render } from 'svelte/server'
-import { createServer, createViteRuntime, build } from 'vite'
+import { createServer, createServerModuleRunner, build } from 'vite'
 import { slugify } from './src/util.js'
 
 mkdirSync('./out', { recursive: true })
@@ -13,12 +12,17 @@ const sanitize = str => str.replaceAll(/<!--(.|\s)*?-->/g, '')
 const vite = await createServer({
   configFile: './vite.config.js',
   appType: 'custom',
-  server: { middlewareMode: true },
+  // One-shot render: no watcher/HMR needed (writing to ./out under the root would
+  // otherwise trip the watcher and spam "[vite] program reload").
+  server: { middlewareMode: true, watch: null, hmr: false },
 })
-const ssr = await createViteRuntime(vite)
-const Recipe = (await ssr.executeEntrypoint('./src/Recipe.svelte')).default
-const Home = (await ssr.executeEntrypoint('./src/Home.svelte')).default
-const css = (await ssr.executeEntrypoint('./src/styles.css')).default
+const runner = createServerModuleRunner(vite.environments.ssr)
+// Import `render` through the runner too, so it shares the exact Svelte instance
+// used by the compiled components (avoids a dual-instance null dev context).
+const { render } = await runner.import('svelte/server')
+const Recipe = (await runner.import('/src/Recipe.svelte')).default
+const Home = (await runner.import('/src/Home.svelte')).default
+const css = (await runner.import('/src/styles.css?inline')).default
 const htmlTemplate = readFileSync('./public/index.html', 'utf-8')
 const useTemplate = (str) => htmlTemplate.replace('<!-- CONTENT -->', str)
 
@@ -53,10 +57,10 @@ try {
     configFile: false, // plain JS bundle; skip the svelte/lightningcss app config
     logLevel: 'warn',
     build: {
-      minify: true,
+      minify: true, // Vite 8: Oxc minifier
       target: 'es2020',
       emptyOutDir: false,
-      rollupOptions: {
+      rolldownOptions: {
         input: './src/client.js',
         output: {
           dir: './out',
