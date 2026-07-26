@@ -28,15 +28,17 @@ const jsonLd = `<script type="application/ld+json">${esc(JSON.stringify(recipe))
 
 <Layout {name}>
   {@html jsonLd}
-  <section class="portions">
-    <button class="portion" data-portion="0.5">half</button>
-    <button class="portion active" data-portion="1">whole</button>
-    <button class="portion" data-portion="2">double</button>
-  </section>
-  <section class="units">
-    <button class="unit active" data-mode="volume">volume</button>
-    <button class="unit" data-mode="weight">weight</button>
-  </section>
+  <aside class="controls">
+    <section class="portions">
+      <button class="portion" data-portion="0.5">half</button>
+      <button class="portion active" data-portion="1">whole</button>
+      <button class="portion" data-portion="2">double</button>
+    </section>
+    <section class="units">
+      <button class="unit active" data-mode="volume">volume</button>
+      <button class="unit" data-mode="weight">weight</button>
+    </section>
+  </aside>
   <What {what} />
   <How {how} />
 </Layout>

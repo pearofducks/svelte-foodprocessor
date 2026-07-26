@@ -4,9 +4,12 @@
   box-sizing: border-box;
 }
 
-html { font-size: 62.5%; }
+html {
+  font-size: 62.5%;
+}
 
-html, body {
+html,
+body {
   font-weight: 300;
   text-rendering: optimizeLegibility;
   color: #454547;
@@ -70,10 +73,19 @@ a {
 ul.recipe-list {
   list-style: none;
 
-  li { height: 4rem; }
+  li {
+    height: 4rem;
+  }
 }
 
-.portion, .unit {
+aside.controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.portion,
+.unit {
   appearance: none;
   border: 1px solid transparent;
   outline: none;
@@ -100,7 +112,8 @@ ul.recipe-list {
   font-size: 1.3rem;
 }
 
-.whatBlock, .howBlock {
+.whatBlock,
+.howBlock {
   margin: 2.5rem 0;
 }
 
@@ -112,11 +125,34 @@ ul.recipe-list {
 .howTextBlock {
   line-height: 160%;
 
-  strong { font-weight: 600; }
-  ol, ul { margin-left: 2rem; margin-bottom: 1.5rem; }
-  p { margin-top: 1.5rem; margin-bottom: 0; }
-  li { padding-left: 1.5rem; margin: 0.75rem 0; }
-  ul & li, ul & ul, ol & ul, ul & ol, ol & ol { margin-top: 0; margin-bottom: 0; }
+  strong {
+    font-weight: 600;
+  }
+
+  ol,
+  ul {
+    margin-left: 2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  p {
+    margin-top: 1.5rem;
+    margin-bottom: 0;
+  }
+
+  li {
+    padding-left: 1.5rem;
+    margin: 0.75rem 0;
+  }
+
+  ul & li,
+  ul & ul,
+  ol & ul,
+  ul & ol,
+  ol & ol {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
 }
 
 .ingredient {
@@ -124,20 +160,68 @@ ul.recipe-list {
   display: flex;
   padding: 0.5rem 0;
 
-  strong { font-weight: 500; }
-  p { margin: 0; }
-  .left { flex: 1; text-align: right; white-space: nowrap; }
-  .right { flex: 2; margin-left: 1.2rem; cursor: pointer; }
-  &.completed { text-decoration: line-through; color: #bbb; }
-  .ingredientSectionBlock & { border-left: 1px solid #ddd; margin-left: 2px; }
+  strong {
+    font-weight: 500;
+  }
+
+  p {
+    margin: 0;
+  }
+
+  .left {
+    flex: 1;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .right {
+    flex: 2;
+    margin-left: 1.2rem;
+    cursor: pointer;
+  }
+
+  &.completed {
+    text-decoration: line-through;
+    color: #bbb;
+  }
+
+  .ingredientSectionBlock & {
+    border-left: 1px solid #ddd;
+    margin-left: 2px;
+  }
 }
 
-.ingredientSectionBlock { margin: 1.5rem 0; }
+.ingredientSectionBlock {
+  margin: 1.5rem 0;
+}
 
 @media only screen and (max-device-width: 480px) {
-  html { font-size: 46%; }
-  body { width: 100%; }
-  .container { width: 100%; padding: 1.5rem; padding-top: 0; }
-  .howBlock { font-size: 1.7rem; }
-  .howTextBlock ul, .howTextBlock ol { margin-left: 5rem; }
+  html {
+    font-size: 46%;
+  }
+
+  body {
+    width: 100%;
+  }
+
+  aside.controls {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .container {
+    width: 100%;
+    padding: 1.5rem;
+    padding-top: 0;
+  }
+
+  .howBlock {
+    font-size: 1.7rem;
+  }
+
+  .howTextBlock ul,
+  .howTextBlock ol {
+    margin-left: 5rem;
+  }
 }
