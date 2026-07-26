@@ -16,6 +16,7 @@
   "scripts": {
     "dev": "node dev.js --path '..'",
     "render": "node renderer.js --path '..'",
+    "build": "pnpm render",
     "test": "node --test test/*.test.js"
   },
   "dependencies": {
