@@ -66,7 +66,6 @@ try {
           dir: './out',
           format: 'iife',
           entryFileNames: 'bundle.js',
-          inlineDynamicImports: true,
         },
       },
     },

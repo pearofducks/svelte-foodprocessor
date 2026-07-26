@@ -14,6 +14,7 @@
     "yaml": "^2.6.0"
   },
   "scripts": {
+    "dev": "node dev.js --path '..'",
     "render": "node renderer.js --path '..'",
     "test": "node --test test/*.test.js"
   },
