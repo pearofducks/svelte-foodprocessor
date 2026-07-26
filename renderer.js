@@ -1,4 +1,4 @@
-import { readFileSync, mkdirSync, writeFileSync } from 'node:fs'
+import { readFileSync, mkdirSync, writeFileSync, copyFileSync } from 'node:fs'
 import { parse as parseYaml } from 'yaml'
 import { globSync } from 'glob'
 import arg from 'arg'
@@ -40,6 +40,9 @@ function handleRecipes() {
   const { body: indexContent } = render(Home, { props: { recipes } })
   writeFileSync('./out/index.html', useTemplate(sanitize(indexContent)), 'utf-8')
   writeFileSync('./out/styles.css', css, 'utf-8')
+  // public/index.html is the render template, not a static asset; copyPublicDir is
+  // off (below) so it can't clobber the rendered index.html. Copy the real asset.
+  copyFileSync('./public/favicon.ico', './out/favicon.ico')
 }
 
 function handleRecipe(filename) {
@@ -60,6 +63,7 @@ try {
       minify: true, // Vite 8: Oxc minifier
       target: 'es2020',
       emptyOutDir: false,
+      copyPublicDir: false, // else public/index.html (the template) overwrites the rendered one
       rolldownOptions: {
         input: './src/client.js',
         output: {
