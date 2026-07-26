@@ -18,7 +18,6 @@ const vite = await createServer({
 const ssr = await createViteRuntime(vite)
 const Recipe = (await ssr.executeEntrypoint('./src/Recipe.svelte')).default
 const Home = (await ssr.executeEntrypoint('./src/Home.svelte')).default
-const Ingredient = (await ssr.executeEntrypoint('./src/Ingredient.svelte')).default
 const css = (await ssr.executeEntrypoint('./src/styles.css')).default
 const htmlTemplate = readFileSync('./public/index.html', 'utf-8')
 const useTemplate = (str) => htmlTemplate.replace('<!-- CONTENT -->', str)
@@ -26,10 +25,6 @@ const useTemplate = (str) => htmlTemplate.replace('<!-- CONTENT -->', str)
 const args = arg({ '--path': String })
 
 function handleRecipes() {
-  // const t = { 'lemons - halved': '4' }
-  // const { body } = render(Ingredient, { props: { _amount: '4', _description: 'lemons - halved' } })
-  // console.log({ body })
-  // return
   const basePath = args['--path']
   const recipeLocations = globSync(path.join(basePath, 'recipes/**/*.recipe'), { absolute: true })
   const recipes = recipeLocations.map(handleRecipe).sort((a, b) => a.name.localeCompare(b.name))
@@ -50,6 +45,11 @@ function handleRecipe(filename) {
   return parsed
 }
 
-handleRecipes()
-
-vite.close()
+try {
+  handleRecipes()
+  // Ship the progressive-enhancement client. No bundler: it has no imports, and
+  // the page loads it via the classic <script src='bundle.js'> in the template.
+  writeFileSync('./out/bundle.js', readFileSync('./src/client.js', 'utf-8'))
+} finally {
+  vite.close()
+}

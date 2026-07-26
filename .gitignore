@@ -1,7 +1,4 @@
 .DS_Store
 node_modules
-public/bundle.*
-public/styles.*
-public/recipes.js
-dist/
 out/
+.playwright-mcp/

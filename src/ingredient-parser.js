@@ -31,8 +31,9 @@ export class Amount {
     this.processAmount()
   }
   get html() {
+    if (this.amount.numericDisplay === null) return this.amount.content ?? ''
     const suffix = (this.amount.canSuffix && this.amount.numeric > 1) ? 's' : ''
-    return `${this.amount.numericDisplay} ${this.amount.content}${suffix}`
+    return `${this.amount.numericDisplay} ${this.amount.content ?? ''}${suffix}`.trim()
   }
   get data() {
     return {
@@ -49,6 +50,9 @@ export class Amount {
       const numericAmount = parseFloat(this.rawAmount)
       if (numericAmount == this.rawAmount) {
         this.amount.numeric = numericAmount
+        this.amount.numericDisplay = this.prettyifyAmount(numericAmount)
+        this.amount.content = ''
+        this.amount.canPretty = true
       } else {
         this.amount.content = this.rawAmount
       }
@@ -59,8 +63,6 @@ export class Amount {
       this.amount.numericDisplay = this.amount.canPretty ? this.prettyifyAmount(this.amount.numeric) : this.amount.numeric
       this.amount.content = this.expandMeasure(measure)
       this.amount.canSuffix = this.amount.content !== measure
-      // const greaterThanOne = amountRaw > 1
-      // const addSuffix = greaterThanOne && this.amount.canSuffix
     }
   }
   expandMeasure(measure) {

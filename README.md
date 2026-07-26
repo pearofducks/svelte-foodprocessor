@@ -1,68 +1,57 @@
-*Psst — looking for a shareable component template? Go here --> [sveltejs/component-template](https://github.com/sveltejs/component-template)*
+# foodprocessor
 
----
+Static site generator for a personal recipe collection. It reads `.recipe` (YAML)
+files and server-renders Svelte components to plain HTML — no client framework and
+no hydration.
 
-# svelte app
+## How it works
 
-This is a project template for [Svelte](https://svelte.dev) apps. It lives at https://github.com/sveltejs/template.
+`renderer.js` boots Vite's SSR runtime, renders each recipe with `svelte/server`,
+and writes static files to `./out`:
 
-To create a new project based on this template using [degit](https://github.com/Rich-Harris/degit):
+- `out/<slug>.html` — one page per recipe
+- `out/index.html` — the recipe index
+- `out/styles.css` — compiled from `src/styles.css` (lightningcss)
+- `out/bundle.js` — the progressive-enhancement client (see below)
 
-```bash
-npx degit sveltejs/template svelte-app
-cd svelte-app
+There is **no `vite build` step**; `vite.config.js` only configures the SSR
+transform used by the renderer.
+
+## Recipe format
+
+Recipes live outside this repo (passed via `--path`), in `<path>/recipes/**/*.recipe`:
+
+```yaml
+name: banana bread
+what:                      # flat map, or nested { section: { … } }
+  flour: 2.5 c
+  egg: 1
+how:                       # array of markdown strings
+  - "Heat oven to 350°F / 175°C"
+  - "Mix, pour into a greased loaf pan, bake 55–65 min."
 ```
 
-*Note that you will need to have [Node.js](https://nodejs.org) installed.*
+Amounts are parsed by `src/ingredient-parser.js` and emitted with `data-*`
+attributes so the client can rescale them.
 
+## Client interactivity
 
-## Get started
+`src/client.js` is copied verbatim to `out/bundle.js` (it has no imports, so no
+bundler is needed) and loaded via a classic `<script defer>`. It progressively
+enhances the already-rendered DOM with:
 
-Install the dependencies...
+- **portion scaling** — half / whole / double, recomputed from the base
+  `data-numeric` values
+- **ingredient check-off** — click a row to toggle a completed state (ephemeral)
+
+The page is fully readable with JavaScript disabled.
+
+## Usage
 
 ```bash
-cd svelte-app
-npm install
+pnpm install
+pnpm run render        # renders ../recipes/**/*.recipe -> ./out
 ```
 
-...then start [Rollup](https://rollupjs.org):
-
-```bash
-npm run dev
-```
-
-Navigate to [localhost:5000](http://localhost:5000). You should see your app running. Edit a component file in `src`, save it, and reload the page to see your changes.
-
-
-## Deploying to the web
-
-### With [now](https://zeit.co/now)
-
-Install `now` if you haven't already:
-
-```bash
-npm install -g now
-```
-
-Then, from within your project folder:
-
-```bash
-now
-```
-
-As an alternative, use the [Now desktop client](https://zeit.co/download) and simply drag the unzipped project folder to the taskbar icon.
-
-### With [surge](https://surge.sh/)
-
-Install `surge` if you haven't already:
-
-```bash
-npm install -g surge
-```
-
-Then, from within your project folder:
-
-```bash
-npm run build
-surge public
+Then serve `./out` as static files.
 ```
